@@ -84,10 +84,10 @@ contract PegStability is AccessControlledV8, ReentrancyGuardUpgradeable {
     /// @notice Event emitted when oracle state var is modified.
     event OracleChanged(address indexed oldOracle, address indexed newOracle);
 
-    /// @notice Event emitted when stable token is swapped for VAI.
+    /// @notice Event emitted when stable token is swapped for VAI. 从USDT 换成 VAI
     event StableForVAISwapped(uint256 stableIn, uint256 vaiOut, uint256 fee);
 
-    /// @notice Event emitted when stable token is swapped for VAI.
+    /// @notice Event emitted when stable token is swapped for VAI. 从VAI 换成USDT
     event VAIForStableSwapped(uint256 vaiBurnt, uint256 stableOut, uint256 vaiFee);
 
     /// @notice thrown when contract is in paused state
@@ -147,7 +147,7 @@ contract PegStability is AccessControlledV8, ReentrancyGuardUpgradeable {
         ONE_DOLLAR = 10 ** (36 - decimals_); // 1$ scaled to the decimals returned by our Oracle
         STABLE_TOKEN_ADDRESS = stableTokenAddress_;
         VAI = IVAI(vaiAddress_);
-        _disableInitializers();
+        _disableInitializers();  //_disableInitializers 这里的作用是什么？
     }
 
     /**
@@ -237,6 +237,7 @@ contract PegStability is AccessControlledV8, ReentrancyGuardUpgradeable {
      * @return Amount of VAI minted to the sender.
      */
     // @custom:event Emits StableForVAISwapped event.
+    //swapTableForVAI 需要考虑fee-on-transfer token.
     function swapStableForVAI(
         address receiver,
         uint256 stableTknAmount

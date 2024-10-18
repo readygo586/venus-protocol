@@ -253,14 +253,14 @@ contract ComptrollerV13Storage is ComptrollerV12Storage {
 
     struct FacetFunctionSelectors {
         bytes4[] functionSelectors;
-        uint256 facetAddressPosition; // position of facetAddress in _facetAddresses array
+        uint256 facetAddressPosition; // position of facetAddress in _facetAddresses array，记录在_facetAddresses中的索引
     }
 
     mapping(bytes4 => FacetAddressAndPosition) internal _selectorToFacetAndPosition;
     // maps facet addresses to function selectors
     mapping(address => FacetFunctionSelectors) internal _facetFunctionSelectors;
     // facet addresses
-    address[] internal _facetAddresses;
+    address[] internal _facetAddresses; //记录facet 的地址
 }
 
 contract ComptrollerV14Storage is ComptrollerV13Storage {

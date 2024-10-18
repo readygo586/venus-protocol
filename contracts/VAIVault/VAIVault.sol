@@ -187,7 +187,7 @@ contract VAIVault is VAIVaultStorage, AccessControlledV5 {
      * @notice Function that updates pending rewards
      */
     function updatePendingRewards() public isActive {
-        uint256 newRewards = xvs.balanceOf(address(this)).sub(xvsBalance);
+        uint256 newRewards = xvs.balanceOf(address(this)).sub(xvsBalance);   //如果有新的xvs奖励，更新奖励
 
         if (newRewards > 0) {
             xvsBalance = xvs.balanceOf(address(this)); // If there is no change the balance didn't change

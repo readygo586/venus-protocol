@@ -11,6 +11,7 @@ import { FacetBase } from "./FacetBase.sol";
  * @dev This contract contains internal functions used in RewardFacet and PolicyFacet
  * @notice This facet contract contains the shared functions used by the RewardFacet and PolicyFacet
  */
+// 给bororw/supplier分发XVS
 contract XVSRewardsHelper is FacetBase {
     /// @notice Emitted when XVS is distributed to a borrower
     event DistributedBorrowerVenus(

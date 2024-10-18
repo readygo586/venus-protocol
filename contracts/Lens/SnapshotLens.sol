@@ -50,7 +50,7 @@ contract SnapshotLens is ExponentialNoError {
         Exp tokensToDenom;
         bool isACollateral;
     }
-
+    // 读取每一个vToken的资产信息
     function getAccountSnapshot(
         address payable account,
         address comptrollerAddress
@@ -64,6 +64,7 @@ contract SnapshotLens is ExponentialNoError {
         return accountSnapshots;
     }
 
+    // 判断用户
     function isACollateral(address account, address asset, address comptrollerAddress) public view returns (bool) {
         VToken[] memory assetsAsCollateral = ComptrollerInterface(comptrollerAddress).getAssetsIn(account);
         for (uint256 j = 0; j < assetsAsCollateral.length; ++j) {
@@ -89,7 +90,7 @@ contract SnapshotLens is ExponentialNoError {
         vars.exchangeRate = Exp({ mantissa: vars.exchangeRateMantissa });
 
         (, uint collateralFactorMantissa) = ComptrollerInterface(comptrollerAddress).markets(address(vToken));
-        vars.collateralFactor = Exp({ mantissa: collateralFactorMantissa });
+        vars.collateralFactor = Exp({ mantissa: collateralFactorMantissa }); //抵押系数
 
         // Get the normalized price of the asset
         vars.oraclePriceMantissa = ComptrollerInterface(comptrollerAddress).oracle().getUnderlyingPrice(vToken);
@@ -117,7 +118,7 @@ contract SnapshotLens is ExponentialNoError {
             underlyingAssetAddress = vBep20.underlying();
             underlyingDecimals = EIP20Interface(vBep20.underlying()).decimals();
         }
-
+        //判断用户是否使用vToken 作为抵押物
         vars.isACollateral = isACollateral(account, address(vToken), comptrollerAddress);
 
         return

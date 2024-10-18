@@ -11,6 +11,8 @@ import { Unitroller, ComptrollerV16Storage } from "../Unitroller.sol";
  * @author Venus
  * @notice This contract contains functions related to facets
  */
+// 就是通过函数签名把调用路由到不同的Implementation合约。
+// Comptroller 合约通过diamond 合约
 contract Diamond is IDiamondCut, ComptrollerV16Storage {
     /// @notice Emitted when functions are added, replaced or removed to facets
     event DiamondCut(IDiamondCut.FacetCut[] _diamondCut);
@@ -44,6 +46,7 @@ contract Diamond is IDiamondCut, ComptrollerV16Storage {
      * @param facet Address of the facet
      * @return selectors Array of function selectors
      */
+    //返回每一面的function selector
     function facetFunctionSelectors(address facet) external view returns (bytes4[] memory) {
         return _facetFunctionSelectors[facet].functionSelectors;
     }
@@ -61,6 +64,7 @@ contract Diamond is IDiamondCut, ComptrollerV16Storage {
      * @notice Get all facet addresses
      * @return facetAddresses Array of facet addresses
      */
+    //返回facet地址立标
     function facetAddresses() external view returns (address[] memory) {
         return _facetAddresses;
     }

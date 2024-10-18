@@ -8,6 +8,7 @@ import { InterestRateModelV8 } from "./InterestRateModelV8.sol";
  * @author Venus
  * @notice An interest rate model with two different slope increase or decrease each after a certain utilization threshold called **kink** is reached.
  */
+// 双折点利率模型
 contract TwoKinksInterestRateModel is InterestRateModelV8 {
     int256 public constant BLOCKS_PER_YEAR = (60 * 60 * 24 * 365) / 3; // (assuming 3s blocks)
 

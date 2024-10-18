@@ -7,6 +7,8 @@ import "./InterestRateModel.sol";
  * @title Venus's JumpRateModel Contract
  * @author Venus
  */
+// rate = baseRatePerBlock + (multiplierPerBlock * utilization)
+// 单转折型的利率
 contract JumpRateModel is InterestRateModel {
     using SafeMath for uint;
 
@@ -60,6 +62,7 @@ contract JumpRateModel is InterestRateModel {
      * @param reserves The amount of reserves in the market (currently unused)
      * @return The utilization rate as a mantissa between [0, 1e18]
      */
+    // 计算储备金占总资产的比例， 总资产 = 总现金 + 总借款 - 总储备
     function utilizationRate(uint cash, uint borrows, uint reserves) public pure returns (uint) {
         // Utilization rate is 0 when there are no borrows
         if (borrows == 0) {

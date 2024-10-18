@@ -4,6 +4,7 @@ pragma solidity 0.8.25;
  * @title Venus's InterestRateModelV8 Interface
  * @author Venus
  */
+// V8 相对于之前InterestRateModel.sol，将返回值类型改为uint256
 abstract contract InterestRateModelV8 {
     /// @notice Indicator that this is an InterestRateModel contract (for inspection)
     bool public constant isInterestRateModel = true;

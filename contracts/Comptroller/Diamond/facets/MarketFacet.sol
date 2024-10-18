@@ -12,6 +12,10 @@ import { VToken } from "../../../Tokens/VTokens/VToken.sol";
  * @dev This facet contains all the methods related to the market's management in the pool
  * @notice This facet contract contains functions regarding markets
  */
+//  增加/删除市场
+//  用户 进入/退出市场
+//  查询全部的市场信息
+//  查询用户参加的市场
 contract MarketFacet is IMarketFacet, FacetBase {
     /// @notice Emitted when an admin supports a market
     event MarketListed(VToken indexed vToken);
@@ -75,9 +79,9 @@ contract MarketFacet is IMarketFacet, FacetBase {
      * @return (errorCode, number of vTokenCollateral tokens to be seized in a liquidation)
      */
     function liquidateCalculateSeizeTokens(
-        address vTokenBorrowed,
+        address vTokenBorrowed,  //借出的资产
         address vTokenCollateral,
-        uint256 actualRepayAmount
+        uint256 actualRepayAmount //归还借出zhi
     ) external view returns (uint256, uint256) {
         (uint256 err, uint256 seizeTokens) = comptrollerLens.liquidateCalculateSeizeTokens(
             address(this),
@@ -122,6 +126,7 @@ contract MarketFacet is IMarketFacet, FacetBase {
      * @param vTokens The list of addresses of the vToken markets to be enabled
      * @return Success indicator for whether each corresponding market was entered
      */
+    // 进入市场。
     function enterMarkets(address[] calldata vTokens) external returns (uint256[] memory) {
         uint256 len = vTokens.length;
 
@@ -139,6 +144,7 @@ contract MarketFacet is IMarketFacet, FacetBase {
      * @param market The address of the market (vToken) to unlist
      * @return uint256 0=success, otherwise a failure. (See enum Error for details)
      */
+    // 撤销一个市场
     function unlistMarket(address market) external returns (uint256) {
         ensureAllowed("unlistMarket(address)");
 
@@ -176,6 +182,7 @@ contract MarketFacet is IMarketFacet, FacetBase {
      * @param vTokenAddress The address of the asset to be removed
      * @return Whether or not the account successfully exited the market
      */
+    //退出市场，如何将vToken换成Token？
     function exitMarket(address vTokenAddress) external returns (uint256) {
         checkActionPauseState(vTokenAddress, Action.EXIT_MARKET);
 
@@ -232,6 +239,7 @@ contract MarketFacet is IMarketFacet, FacetBase {
      * @param vToken The address of the market (token) to list
      * @return uint256 0=success, otherwise a failure. (See enum Error for details)
      */
+    // 和unlistMarket 的作用相反，将市场添加到市场列表中
     function _supportMarket(VToken vToken) external returns (uint256) {
         ensureAllowed("_supportMarket(address)");
 
@@ -239,7 +247,7 @@ contract MarketFacet is IMarketFacet, FacetBase {
             return fail(Error.MARKET_ALREADY_LISTED, FailureInfo.SUPPORT_MARKET_EXISTS);
         }
 
-        vToken.isVToken(); // Sanity check to make sure its really a VToken
+        vToken.isVToken(); // Sanity check to make sure its really a VToken，检查是否是vToken
 
         // Note that isVenus is not in active use anymore
         Market storage newMarket = markets[address(vToken)];

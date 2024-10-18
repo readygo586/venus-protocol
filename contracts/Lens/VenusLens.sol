@@ -115,6 +115,7 @@ contract VenusLens is ExponentialNoError {
      * @param vToken The address of the vToken to fetch VTokenMetadata
      * @return VTokenMetadata struct with vToken supply and borrow information.
      */
+    // 获取每个vToken的信息
     function vTokenMetadata(VToken vToken) public returns (VTokenMetadata memory) {
         uint exchangeRateCurrent = vToken.exchangeRateCurrent();
         address comptrollerAddress = address(vToken.comptroller());

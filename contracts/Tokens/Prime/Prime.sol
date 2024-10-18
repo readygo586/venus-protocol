@@ -170,7 +170,7 @@ contract Prime is IPrime, AccessControlledV8, PausableUpgradeable, MaxLoopsLimit
 
         // Note that the contract is upgradeable. Use initialize() or reinitializers
         // to set the state variables.
-        _disableInitializers();
+        _disableInitializers();  //
     }
 
     /**

@@ -48,7 +48,7 @@ contract ComptrollerLens is ComptrollerLensInterface, ComptrollerErrorReporter, 
         address comptroller,
         address vTokenBorrowed,
         address vTokenCollateral,
-        uint actualRepayAmount
+        uint actualRepayAmount  //清算时repay的资产数量
     ) external view returns (uint, uint) {
         /* Read oracle prices for borrowed and collateral markets */
         uint priceBorrowedMantissa = ComptrollerInterface(comptroller).oracle().getUnderlyingPrice(
@@ -62,6 +62,10 @@ contract ComptrollerLens is ComptrollerLensInterface, ComptrollerErrorReporter, 
         }
 
         /*
+          actualRepayAmount * priceBorrowed: 归还资产的价值
+          actualRepayAmount * liquidationIncentive * priceBorrowed / priceCollateral: 考虑清算激励时后，与归还资产的价值等价的seized vToken的数量。
+          seizeTokens = seized underlying Token的数量。
+
          * Get the exchange rate and calculate the number of collateral tokens to seize:
          *  seizeAmount = actualRepayAmount * liquidationIncentive * priceBorrowed / priceCollateral
          *  seizeTokens = seizeAmount / exchangeRate
@@ -92,6 +96,7 @@ contract ComptrollerLens is ComptrollerLensInterface, ComptrollerErrorReporter, 
      * @param actualRepayAmount Repayment amount i.e amount to be repaid of the total borrowed amount
      * @return A tuple of error code, and tokens to seize
      */
+    // 这个函数应该是归还VAI，获得其他资产。
     function liquidateVAICalculateSeizeTokens(
         address comptroller,
         address vTokenCollateral,
@@ -131,6 +136,7 @@ contract ComptrollerLens is ComptrollerLensInterface, ComptrollerErrorReporter, 
     }
 
     /**
+     //假设赎回一些vToken 的同时在借一些vToken时，检查账户的流动性和shortfall
      * @notice Computes the hypothetical liquidity and shortfall of an account given a hypothetical borrow
      *      A snapshot of the account is taken and the total borrow amount of the account is calculated
      * @param comptroller Address of comptroller
@@ -144,7 +150,7 @@ contract ComptrollerLens is ComptrollerLensInterface, ComptrollerErrorReporter, 
         address comptroller,
         address account,
         VToken vTokenModify,
-        uint redeemTokens,
+        uint redeemTokens,  //赎回一些代币时同时再借一些代币
         uint borrowAmount
     ) external view returns (uint, uint, uint) {
         AccountLiquidityLocalVars memory vars; // Holds all our calculation results
@@ -176,7 +182,7 @@ contract ComptrollerLens is ComptrollerLensInterface, ComptrollerErrorReporter, 
             vars.oraclePrice = Exp({ mantissa: vars.oraclePriceMantissa });
 
             // Pre-compute a conversion factor from tokens -> bnb (normalized price value)
-            vars.tokensToDenom = mul_(mul_(vars.collateralFactor, vars.exchangeRate), vars.oraclePrice);
+            vars.tokensToDenom = mul_(mul_(vars.collateralFactor, vars.exchangeRate), vars.oraclePrice); //vTokne 价格
 
             // sumCollateral += tokensToDenom * vTokenBalance
             vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.vTokenBalance, vars.sumCollateral);
@@ -196,7 +202,7 @@ contract ComptrollerLens is ComptrollerLensInterface, ComptrollerErrorReporter, 
                     vars.tokensToDenom,
                     redeemTokens,
                     vars.sumBorrowPlusEffects
-                );
+                ); //TODO, 应当检查该币种余额是否大于redeemToken。
 
                 // borrow effect
                 // sumBorrowPlusEffects += oraclePrice * borrowAmount
@@ -210,7 +216,7 @@ contract ComptrollerLens is ComptrollerLensInterface, ComptrollerErrorReporter, 
 
         VAIControllerInterface vaiController = ComptrollerInterface(comptroller).vaiController();
 
-        if (address(vaiController) != address(0)) {
+        if (address(vaiController) != address(0)) { // 如果有VAI， 检查用户借了多少VAI
             vars.sumBorrowPlusEffects = add_(vars.sumBorrowPlusEffects, vaiController.getVAIRepayAmount(account));
         }
 

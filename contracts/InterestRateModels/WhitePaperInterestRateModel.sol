@@ -8,6 +8,7 @@ import "./InterestRateModel.sol";
  * @author Venus
  * @notice The parameterized model described in section 2.4 of the original Venus Protocol whitepaper
  */
+// 直线型利率模型。
 contract WhitePaperInterestRateModel is InterestRateModel {
     using SafeMath for uint;
 

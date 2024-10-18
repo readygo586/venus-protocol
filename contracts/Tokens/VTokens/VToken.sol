@@ -572,6 +572,7 @@ contract VToken is VTokenInterface, Exponential, TokenErrorReporter {
      * @dev This function does not accrue interest before calculating the exchange rate
      * @return Calculated exchange rate scaled by 1e18
      */
+
     function exchangeRateStored() public view returns (uint) {
         (MathError err, uint result) = exchangeRateStoredInternal();
         ensureNoMathError(err);

@@ -38,6 +38,7 @@ contract FacetBase is ComptrollerV16Storage, ExponentialNoError, ComptrollerErro
     }
 
     /// @notice Reverts if a certain action is paused on a market
+    // 检查特定市场上的某个action是否被暂停了
     function checkActionPauseState(address market, Action action) internal view {
         require(!actionPaused(market, action), "action is paused");
     }
@@ -62,7 +63,7 @@ contract FacetBase is ComptrollerV16Storage, ExponentialNoError, ComptrollerErro
         require(msg.sender == admin || msg.sender == privilegedAddress, "access denied");
     }
 
-    /// @notice Checks the caller is allowed to call the specified fuction
+    /// @notice Checks the caller is allowed to call the specified function
     function ensureAllowed(string memory functionSig) internal view {
         require(IAccessControlManagerV5(accessControl).isAllowedToCall(msg.sender, functionSig), "access denied");
     }
@@ -93,6 +94,7 @@ contract FacetBase is ComptrollerV16Storage, ExponentialNoError, ComptrollerErro
     /**
      * @notice Transfer XVS to VAI Vault
      */
+    // 将XVS转移给VAI Vault, 用于VAI
     function releaseToVault() internal {
         if (releaseStartBlock == 0 || getBlockNumber() < releaseStartBlock) {
             return;
@@ -110,6 +112,7 @@ contract FacetBase is ComptrollerV16Storage, ExponentialNoError, ComptrollerErro
         // releaseAmount = venusVAIVaultRate * deltaBlocks
         uint256 releaseAmount_ = mul_(venusVAIVaultRate, deltaBlocks);
 
+        // 从代理合约释放XVS 给VAI vault合约
         if (xvsBalance >= releaseAmount_) {
             actualAmount = releaseAmount_;
         } else {
@@ -120,15 +123,16 @@ contract FacetBase is ComptrollerV16Storage, ExponentialNoError, ComptrollerErro
             return;
         }
 
-        releaseStartBlock = getBlockNumber();
+        releaseStartBlock = getBlockNumber();  //更新startBlock
 
         xvs_.safeTransfer(vaiVaultAddress, actualAmount);
         emit DistributedVAIVaultVenus(actualAmount);
 
-        IVAIVault(vaiVaultAddress).updatePendingRewards();
+        IVAIVault(vaiVaultAddress).updatePendingRewards(); // 更新VAIValut合约中记录的XVS奖励的数量。
     }
 
     /**
+     假设用户同时从赎回和借出 vTokenModify 资产时，返回用户总的流动性余额，或者shortfall的数量。
      * @notice Determine what the account liquidity would be if the given amounts were redeemed/borrowed
      * @param vTokenModify The market to hypothetically redeem/borrow in
      * @param account The account to determine liquidity for
@@ -190,6 +194,7 @@ contract FacetBase is ComptrollerV16Storage, ExponentialNoError, ComptrollerErro
      * @param redeemTokens Amount of tokens to redeem
      * @return Success indicator for redeem is allowed or not
      */
+    // 检查是否允许赎回
     function redeemAllowedInternal(
         address vToken,
         address redeemer,

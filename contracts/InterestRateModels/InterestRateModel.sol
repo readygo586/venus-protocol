@@ -4,6 +4,7 @@ pragma solidity ^0.5.16;
  * @title Venus's InterestRateModel Interface
  * @author Venus
  */
+// 利率合约提供两个接口, getBorrowRate 和 getSupplyRate
 contract InterestRateModel {
     /// @notice Indicator that this is an InterestRateModel contract (for inspection)
     bool public constant isInterestRateModel = true;
@@ -29,6 +30,6 @@ contract InterestRateModel {
         uint cash,
         uint borrows,
         uint reserves,
-        uint reserveFactorMantissa
+        uint reserveFactorMantissa  //收益总有多少进入储备金
     ) external view returns (uint);
 }
